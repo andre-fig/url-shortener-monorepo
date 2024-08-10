@@ -26,6 +26,7 @@ services:
       DATABASE_USERNAME: youruser
       DATABASE_PASSWORD: yourpassword
       DATABASE_NAME: yourdatabase
+      JWT_SECRET: your_jwt_secret
     depends_on:
       - postgres
 
