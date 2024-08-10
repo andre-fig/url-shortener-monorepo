@@ -1,73 +1,44 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Criando uma Migration com Docker
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Para criar uma migration no seu projeto dentro de um contêiner Docker, siga os passos abaixo:
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+1. **Verifique os Contêineres em Execução:**
 
-## Description
+   Primeiro, liste os contêineres em execução para identificar o ID ou nome do contêiner que você deseja acessar:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+   ```bash
+   docker ps
+   ```
 
-## Installation
+   Procure pelo contêiner que está rodando o serviço onde você deseja gerar a migration.
 
-```bash
-$ yarn install
-```
+2. **Acesse o Contêiner:**
 
-## Running the app
+   Use o ID ou nome do contêiner para acessar o terminal dentro do contêiner. Substitua `<container_id>` pelo ID ou nome do contêiner:
 
-```bash
-# development
-$ yarn run start
+   ```bash
+   docker exec -it <container_id> /bin/sh
+   ```
 
-# watch mode
-$ yarn run start:dev
+3. **Gere a Migration:**
 
-# production mode
-$ yarn run start:prod
-```
+   Uma vez dentro do contêiner, execute o comando para gerar a migration. Certifique-se de que você está no diretório correto onde o TypeORM está configurado:
 
-## Test
+   ```bash
+   yarn typeorm migration:generate -d ./src/config/data-source.ts ./src/migrations/{NomeDaMigration}
+   ```
 
-```bash
-# unit tests
-$ yarn run test
+   Este comando irá gerar uma nova migration chamada `InitialMigration` no diretório `src/migrations`.
 
-# e2e tests
-$ yarn run test:e2e
+4. **Saia do Contêiner:**
 
-# test coverage
-$ yarn run test:cov
-```
+   Depois de gerar a migration, você pode sair do contêiner:
 
-## Support
+   ```bash
+   exit
+   ```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Notas:
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- **Verifique** se o arquivo `data-source.ts` está configurado corretamente com as entidades e as configurações do banco de dados.
+- **Certifique-se** de que o TypeORM e o ts-node estão instalados no ambiente Docker.

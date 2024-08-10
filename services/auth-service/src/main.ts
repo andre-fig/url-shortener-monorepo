@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: '*', 
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,
@@ -14,13 +14,13 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Auth Service')
-    .setDescription('API de Autenticação')
+    .setDescription('Authentication API')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3002);
+  await app.listen(3000);
 }
 bootstrap();

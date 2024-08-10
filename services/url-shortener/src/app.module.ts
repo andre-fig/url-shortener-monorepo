@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ShortenedUrl } from './shortened-url/entities/shortened-url.entity';
+import { User } from './shortened-url/entities/user.entity';
 
 @Module({
   imports: [
@@ -16,11 +18,11 @@ import { AppService } from './app.service';
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      autoLoadEntities: true,
-      synchronize: true,
+      entities: [ShortenedUrl, User],
+      synchronize: false,
     }),
   ],
-  controllers: [AppController], 
-  providers: [AppService], 
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
