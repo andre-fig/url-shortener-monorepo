@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: youruser
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: yourdatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  url-shortener:
+    build:
+      context: .
+      dockerfile: ./services/url-shortener/Dockerfile
+    command: yarn run start:prod
+    volumes:
+      - ./services/url-shortener:/url-shortener
+    ports:
+      - "3001:3000"
+    environment:
+      DATABASE_URL: postgres://youruser:yourpassword@postgres:5432/yourdatabase
+    depends_on:
+      - postgres
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./services/auth-service/Dockerfile
+    command: yarn run start:prod
+    volumes:
+      - ./services/auth-service:/auth-service
+    ports:
+      - "3002:3000"
+    environment:
+      DATABASE_URL: postgres://youruser:yourpassword@postgres:5432/yourdatabase
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:

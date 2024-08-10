@@ -1,0 +1,9 @@
+{
+  "name": "url-shortener-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "services/*"
+  ],
+  "scripts": {}
+}
