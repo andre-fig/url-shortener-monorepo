@@ -8,6 +8,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('shortened_urls')
 export class ShortenedUrl {
@@ -36,5 +37,6 @@ export class ShortenedUrl {
   updatedAt: Date;
 
   @DeleteDateColumn({ name: 'deleted_at' })
+  @Exclude()
   deletedAt: Date;
 }

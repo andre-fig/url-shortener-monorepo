@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { ShortenedUrl } from './shortened-url.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
@@ -10,6 +11,7 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @OneToMany(() => ShortenedUrl, (shortenedUrl) => shortenedUrl.user)
@@ -31,5 +33,6 @@ export class User {
   updatedAt: Date;
 
   @Column({ type: 'timestamp', nullable: true, name: 'deleted_at' })
+  @Exclude()
   deletedAt: Date;
 }
