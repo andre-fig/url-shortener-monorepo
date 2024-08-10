@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('users')
 export class User {
@@ -9,6 +10,7 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column({
@@ -27,5 +29,6 @@ export class User {
   updatedAt: Date;
 
   @Column({ type: 'timestamp', nullable: true, name: 'deleted_at' })
+  @Exclude()
   deletedAt: Date;
 }
