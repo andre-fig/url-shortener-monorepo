@@ -11,6 +11,14 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { UrlShortenerService } from './url-shortener.service';
 import { CreateShortenedUrlDto } from './dtos/create-shortened-url.dto';
 import { Response } from 'express';
@@ -19,11 +27,19 @@ import { UpdateShortenedUrlDto } from './dtos/update-shortened-url.dto';
 import { ShortenedUrl } from './entities/shortened-url.entity';
 import { GetUserId } from '../common/decorators/get-user-id.decorator';
 
+@ApiTags('URL Shortener')
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('shortened-url')
 export class UrlShortenerController {
   constructor(private readonly urlShortenerService: UrlShortenerService) {}
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a shortened URL' })
+  @ApiResponse({
+    status: 201,
+    description: 'The URL has been successfully shortened.',
+  })
+  @ApiResponse({ status: 400, description: 'Invalid URL format.' })
   @Post()
   public async shortenUrl(
     @Body() createShortenedUrlDto: CreateShortenedUrlDto,
@@ -35,6 +51,17 @@ export class UrlShortenerController {
     );
   }
 
+  @ApiOperation({ summary: 'Redirect to the original URL using a shortcode' })
+  @ApiParam({
+    name: 'shortCode',
+    description: 'The shortcode of the shortened URL',
+    example: 'abc123',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully redirected to the original URL.',
+  })
+  @ApiResponse({ status: 404, description: 'URL not found.' })
   @Get('redirect/:shortCode')
   public async redirectToOriginal(
     @Param('shortCode') shortCode: string,
@@ -58,6 +85,15 @@ export class UrlShortenerController {
   `);
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all shortened URLs for the authenticated user',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully retrieved the list of shortened URLs.',
+    type: [ShortenedUrl],
+  })
   @Get()
   public async getUserShortenedUrls(
     @GetUserId() userId: number,
@@ -65,6 +101,19 @@ export class UrlShortenerController {
     return await this.urlShortenerService.getUserShortenedUrls(userId);
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a shortened URL' })
+  @ApiParam({
+    name: 'shortCode',
+    description: 'The shortcode of the shortened URL to update',
+    example: 'abc123',
+  })
+  @ApiBody({ type: UpdateShortenedUrlDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully updated the shortened URL.',
+  })
+  @ApiResponse({ status: 404, description: 'URL not found.' })
   @Patch(':shortCode')
   public async updateShortenedUrl(
     @Param('shortCode') shortCode: string,
@@ -79,6 +128,18 @@ export class UrlShortenerController {
     return { message: 'Shortened URL updated successfully' };
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete a shortened URL' })
+  @ApiParam({
+    name: 'shortCode',
+    description: 'The shortcode of the shortened URL to delete',
+    example: 'abc123',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully deleted the shortened URL.',
+  })
+  @ApiResponse({ status: 404, description: 'URL not found.' })
   @Delete(':shortCode')
   public async deleteShortenedUrl(
     @Param('shortCode') shortCode: string,

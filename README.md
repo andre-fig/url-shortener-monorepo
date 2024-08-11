@@ -150,14 +150,14 @@ A melhoria proposta visa corrigir o comportamento indesejado de redirecionamento
 
 ## 6. Testes e Validações
 
-- [ ] Testes Unitários:
+- [x] Testes Unitários:
   - Escrever testes unitários para todos os endpoints e funcionalidades usando Jest.
 - [x] Validação de Entrada:
   - Implementar validações de entrada para todos os campos necessários nos endpoints.
 
 ## 7. Documentação e Observabilidade
 
-- [ ] Swagger:
+- [x] Swagger:
   - Documentar todos os endpoints usando Swagger.
 - [ ] Observabilidade:
   - Implementar ou abstrair logs, métricas e rastreamento (por exemplo, usando Sentry, Prometheus, etc.), configuráveis via variáveis de ambiente.
