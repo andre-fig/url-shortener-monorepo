@@ -19,7 +19,7 @@ export class UrlShortenerService {
   public async createShortenedUrl(
     createShortenedUrlDto: CreateShortenedUrlDto,
     authorization: string,
-  ): Promise<ShortenedUrl> {
+  ): Promise<{ shortenedUrl: string, user?: User }> {
     let user: User | null = null;
   
     if (authorization) {
@@ -33,20 +33,26 @@ export class UrlShortenerService {
     }
   
     const shortCode = this.generateShortCode();
-    const shortenedUrl = this.shortenedUrlRepository.create({
+    const shortenedUrlEntity = this.shortenedUrlRepository.create({
       ...createShortenedUrlDto,
       shortCode,
       user,
     });
   
-    return this.shortenedUrlRepository.save(shortenedUrl);
-  }
+    await this.shortenedUrlRepository.save(shortenedUrlEntity);
   
+    const shortenedUrl = `${process.env.BASE_URL}/shortened-url/redirect/${shortCode}`;
+  
+    return user ? { shortenedUrl, user } : { shortenedUrl };
+  }
 
-  public async getOriginalUrl(shortCode: string): Promise<string> {
-    const shortenedUrl = await this.shortenedUrlRepository.findOne({ where: { shortCode } });
+  async getOriginalUrl(shortCode: string): Promise<string | null> {
+    const shortenedUrl = await this.shortenedUrlRepository.findOne({
+      where: { shortCode },
+    });
+    
     if (!shortenedUrl) {
-      throw new NotFoundException('URL not found');
+      return null;
     }
 
     shortenedUrl.clickCount += 1;

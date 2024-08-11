@@ -2,8 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { validateEnvVars } from './config/setup';
 
 async function bootstrap() {
+  validateEnvVars();
+
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({

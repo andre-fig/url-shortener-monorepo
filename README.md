@@ -2,7 +2,7 @@
 
 ## 1. Configuração Inicial do Projeto
 
-- [x] Configuração do Monorepo (se aplicável):
+- [x] Configuração do Monorepo:
   - Estruturar o projeto como um monorepo para separar serviços (gerenciamento de identidade e encurtamento de URL).
   - Configurar docker-compose para orquestrar os serviços.
 - [x] Inicialização do Projeto:
@@ -27,12 +27,12 @@
 - [X] Autenticação:
   - Criar endpoint para autenticação com e-mail e senha.
   - Implementar geração de tokens JWT.
-- [ ] Autorização:
+- [X] Autorização:
   - Proteger endpoints que requerem autenticação com JWT.
 
 ## 4. Implementação dos Endpoints
 
-- [ ] Encurtamento de URLs:
+- [X] Encurtamento de URLs:
   - Criar um endpoint para encurtar URLs, aceitando requisições com e sem autenticação.
   - Gerar um código encurtado de no máximo 6 caracteres.
   - Salvar o código encurtado e a URL original no banco de dados. Se o usuário estiver autenticado, associar a URL ao usuário.
@@ -45,7 +45,7 @@
 
 ## 5. Redirecionamento e Contabilização de Cliques
 
-- [ ] Redirecionamento:
+- [X] Redirecionamento:
   - Criar um endpoint para redirecionar o usuário para a URL original ao acessar uma URL encurtada.
   - Incrementar o contador de cliques a cada acesso.
 
