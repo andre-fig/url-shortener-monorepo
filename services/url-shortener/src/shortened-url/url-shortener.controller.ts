@@ -19,15 +19,15 @@ import { UpdateShortenedUrlDto } from './dtos/update-shortened-url.dto';
 import { ShortenedUrl } from './entities/shortened-url.entity';
 import { GetUserId } from '../common/decorators/get-user-id.decorator';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('shortened-url')
 export class UrlShortenerController {
   constructor(private readonly urlShortenerService: UrlShortenerService) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   public async shortenUrl(
     @Body() createShortenedUrlDto: CreateShortenedUrlDto,
-    @GetUserId() userId: number | undefined,
+    @GetUserId({ allowUndefined: true }) userId: number | undefined,
   ): Promise<{ shortenedUrl: string; user?: User }> {
     return this.urlShortenerService.createShortenedUrl(
       createShortenedUrlDto,
@@ -42,17 +42,27 @@ export class UrlShortenerController {
   ): Promise<void> {
     const originalUrl =
       await this.urlShortenerService.getOriginalUrl(shortCode);
+
     if (!originalUrl) {
       throw new NotFoundException('URL not found');
     }
-    res.redirect(originalUrl);
+    res.status(200).send(`
+    <html>
+      <head>
+        <meta http-equiv="refresh" content="0; url=${originalUrl}" />
+      </head>
+      <body>
+        <p>Redirecting to <a href="${originalUrl}">${originalUrl}</a></p>
+      </body>
+    </html>
+  `);
   }
 
   @Get()
   public async getUserShortenedUrls(
     @GetUserId() userId: number,
   ): Promise<ShortenedUrl[]> {
-    return this.urlShortenerService.getUserShortenedUrls(userId);
+    return await this.urlShortenerService.getUserShortenedUrls(userId);
   }
 
   @Patch(':shortCode')

@@ -1,12 +1,6 @@
-import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
+import { IsUrl } from 'class-validator';
 
 export class UpdateShortenedUrlDto {
-  @IsOptional()
-  @IsUrl()
-  originalUrl?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(6)
-  shortCode?: string;
+  @IsUrl({}, { message: 'Invalid URL format' })
+  originalUrl: string;
 }

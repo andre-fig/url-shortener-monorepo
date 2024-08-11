@@ -19,6 +19,7 @@ import { UrlShortenerModule } from './shortened-url/url-shortener.module';
       database: process.env.DATABASE_NAME,
       autoLoadEntities: true,
       synchronize: false,
+      logging: true,
     }),
     UrlShortenerModule,
   ],

@@ -12,6 +12,5 @@ export function validateEnvVars() {
   ensureEnvVar('DATABASE_USERNAME');
   ensureEnvVar('DATABASE_PASSWORD');
   ensureEnvVar('DATABASE_NAME');
-  ensureEnvVar('JWT_SECRET');
   ensureEnvVar('BASE_URL');
 }

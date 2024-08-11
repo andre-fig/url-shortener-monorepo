@@ -7,13 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { User } from './entities/user.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([ShortenedUrl, User]),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60m' },
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([ShortenedUrl, User])],
   controllers: [UrlShortenerController],
   providers: [UrlShortenerService],
 })

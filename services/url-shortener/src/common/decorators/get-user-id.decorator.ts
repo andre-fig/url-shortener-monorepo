@@ -6,12 +6,20 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 export const GetUserId = createParamDecorator(
-  (_data: unknown, ctx: ExecutionContext): number | undefined => {
+  (
+    _data: { allowUndefined?: boolean } = {},
+    ctx: ExecutionContext,
+  ): number | undefined => {
+    const { allowUndefined } = _data;
     const request = ctx.switchToHttp().getRequest();
     const token = extractTokenFromHeader(request.headers['authorization']);
 
     if (!token) {
-      return undefined;
+      if (allowUndefined) {
+        return undefined;
+      } else {
+        throw new UnauthorizedException('Token not provided');
+      }
     }
 
     const userId = extractUserIdFromToken(token);

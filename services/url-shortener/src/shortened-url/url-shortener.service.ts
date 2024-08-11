@@ -7,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShortenedUrl } from './entities/shortened-url.entity';
 import { CreateShortenedUrlDto } from './dtos/create-shortened-url.dto';
-import { JwtService } from '@nestjs/jwt';
 import { User } from './entities/user.entity';
 import { UpdateShortenedUrlDto } from './dtos/update-shortened-url.dto';
 
@@ -18,7 +17,6 @@ export class UrlShortenerService {
     private readonly shortenedUrlRepository: Repository<ShortenedUrl>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly jwtService: JwtService,
   ) {}
 
   public async createShortenedUrl(
@@ -42,15 +40,19 @@ export class UrlShortenerService {
       await this.shortenedUrlRepository.findOne({ where: { shortCode } })
     );
 
+    const normalizedUrl = this.normalizeUrl(createShortenedUrlDto.originalUrl);
+
     const shortenedUrlEntity = this.shortenedUrlRepository.create({
-      ...createShortenedUrlDto,
+      originalUrl: normalizedUrl,
       shortCode,
       user,
     });
 
     await this.shortenedUrlRepository.save(shortenedUrlEntity);
 
-    const shortenedUrl = `${process.env.BASE_URL}/shortened-url/redirect/${shortCode}`;
+    const baseUrl = process.env.BASE_URL;
+    const formattedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+    const shortenedUrl = `${formattedBaseUrl}r/${shortCode}`;
 
     return user ? { shortenedUrl, user } : { shortenedUrl };
   }
@@ -67,7 +69,9 @@ export class UrlShortenerService {
     shortenedUrl.clickCount += 1;
     await this.shortenedUrlRepository.save(shortenedUrl);
 
-    return shortenedUrl.originalUrl;
+    const normalizedUrl = this.normalizeUrl(shortenedUrl.originalUrl);
+
+    return normalizedUrl;
   }
 
   public async getUserShortenedUrls(userId: number): Promise<ShortenedUrl[]> {
@@ -77,9 +81,8 @@ export class UrlShortenerService {
       throw new UnauthorizedException('User not found');
     }
 
-    return this.shortenedUrlRepository.find({
-      where: { user },
-      relations: ['user'],
+    return await this.shortenedUrlRepository.find({
+      where: { user: { id: userId } },
     });
   }
 
@@ -95,7 +98,7 @@ export class UrlShortenerService {
     }
 
     const shortenedUrl = await this.shortenedUrlRepository.findOne({
-      where: { shortCode, user },
+      where: { shortCode, user: { id: userId } },
     });
 
     if (!shortenedUrl) {
@@ -104,7 +107,9 @@ export class UrlShortenerService {
       );
     }
 
-    Object.assign(shortenedUrl, updateShortenedUrlDto);
+    const normalizedUrl = this.normalizeUrl(updateShortenedUrlDto.originalUrl);
+
+    Object.assign(shortenedUrl, { originalUrl: normalizedUrl });
     return this.shortenedUrlRepository.save(shortenedUrl);
   }
 
@@ -119,7 +124,7 @@ export class UrlShortenerService {
     }
 
     const shortenedUrl = await this.shortenedUrlRepository.findOne({
-      where: { shortCode, user },
+      where: { shortCode, user: { id: userId } },
     });
 
     if (!shortenedUrl) {
@@ -133,5 +138,14 @@ export class UrlShortenerService {
 
   private generateShortCode(): string {
     return Math.random().toString(36).substring(2, 8);
+  }
+
+  private normalizeUrl(url: string): string {
+    const trimmedUrl = url.trim();
+
+    const hasValidProtocol =
+      trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://');
+
+    return hasValidProtocol ? trimmedUrl : `http://${trimmedUrl}`;
   }
 }

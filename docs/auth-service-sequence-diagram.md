@@ -20,11 +20,11 @@ authService --> authController : Returns serialized User
 
 user --> authController : Sends login request
 authController -> interceptor : Applies ClassSerializerInterceptor
-authController --> authService : Calls validateUser(email, password)
+authController --> authService : Calls authenticateUser(email, password)
 authService --> userRepository : Retrieves user from database
 authService --> bcrypt : Compares passwords
-authService --> authController : Returns validated user
-authController --> authService : Calls generateJwt(user)
-authService --> jwtService : Generates JWT token
-authService --> authController : Returns serialized access token to user
+authService --> authService : Validates user credentials
+authService --> jwtService : Generates JWT token with sub and exp
+authService --> authController : Returns serialized access token with sub and exp
 @enduml
+```

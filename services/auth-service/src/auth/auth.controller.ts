@@ -10,8 +10,8 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { LoginUserDto } from './dtos/login-user.dto';
 
-@Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

@@ -3,6 +3,9 @@
   "extra_config": {
     "router": {
       "return_error_msg": true
+    },
+    "security/http": {
+      "is_development": true
     }
   },
   "endpoints": [
@@ -68,13 +71,27 @@
       }
     },
     {
-      "endpoint": "/api/shortened-url",
+      "endpoint": "/api/shortened-url/{id}",
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
         {
           "host": ["http://url-shortener:3000"],
-          "url_pattern": "shortened-url/"
+          "url_pattern": "shortened-url/redirect/{id}",
+          "output_encoding": "no-op"
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/shortened-url",
+      "method": "GET",
+      "output_encoding": "json-collection",
+      "input_headers": ["Content-Type", "Authorization"],
+      "backend": [
+        {
+          "host": ["http://url-shortener:3000"],
+          "url_pattern": "shortened-url/",
+          "is_collection": true
         }
       ],
       "extra_config": {
@@ -87,14 +104,45 @@
     },
     {
       "endpoint": "/api/shortened-url/{id}",
-      "method": "GET",
+      "method": "PATCH",
       "output_encoding": "no-op",
+      "input_headers": ["Content-Type", "Authorization"],
       "backend": [
         {
           "host": ["http://url-shortener:3000"],
-          "url_pattern": "shortened-url/redirect/{id}"
+          "url_pattern": "shortened-url/{id}"
         }
-      ]
+      ],
+      "extra_config": {
+        "auth/validator": {
+          "alg": "HS256",
+          "jwk_local_path": "./jwk_private_key.json",
+          "disable_jwk_security": true
+        },
+        "validation/json-schema": {
+          "type": "object",
+          "required": ["originalUrl"]
+        }
+      }
+    },
+    {
+      "endpoint": "/api/shortened-url/{id}",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "input_headers": ["Content-Type", "Authorization"],
+      "backend": [
+        {
+          "host": ["http://url-shortener:3000"],
+          "url_pattern": "shortened-url/{id}"
+        }
+      ],
+      "extra_config": {
+        "auth/validator": {
+          "alg": "HS256",
+          "jwk_local_path": "./jwk_private_key.json",
+          "disable_jwk_security": true
+        }
+      }
     }
   ]
 }
