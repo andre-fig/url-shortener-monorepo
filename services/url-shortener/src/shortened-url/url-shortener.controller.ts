@@ -29,7 +29,7 @@ export class UrlShortenerController {
     @Body() createShortenedUrlDto: CreateShortenedUrlDto,
     @GetUserId({ allowUndefined: true }) userId: number | undefined,
   ): Promise<{ shortenedUrl: string; user?: User }> {
-    return this.urlShortenerService.createShortenedUrl(
+    return await this.urlShortenerService.createShortenedUrl(
       createShortenedUrlDto,
       userId,
     );
@@ -83,7 +83,7 @@ export class UrlShortenerController {
   public async deleteShortenedUrl(
     @Param('shortCode') shortCode: string,
     @GetUserId() userId: number,
-  ) {
-    return this.urlShortenerService.deleteShortenedUrl(shortCode, userId);
+  ): Promise<void> {
+    return await this.urlShortenerService.deleteShortenedUrl(shortCode, userId);
   }
 }

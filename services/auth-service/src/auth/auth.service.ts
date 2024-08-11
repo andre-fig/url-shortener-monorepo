@@ -43,7 +43,6 @@ export class AuthService {
     }
 
     const stringUserId = user.id.toString();
-
     const sub = this.jwtService.sign({ sub: stringUserId });
     const { exp } = this.jwtService.decode(sub) as { exp: number };
 
@@ -56,7 +55,7 @@ export class AuthService {
   }
 
   public async validateUserById(id: number): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
+    return await this.usersRepository.findOne({ where: { id } });
   }
 
   private async validateUser(
@@ -79,6 +78,6 @@ export class AuthService {
     password: string,
     hashedPassword: string,
   ): Promise<boolean> {
-    return bcrypt.compare(password, hashedPassword);
+    return await bcrypt.compare(password, hashedPassword);
   }
 }

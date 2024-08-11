@@ -31,11 +31,9 @@ export class ShortenedUrl {
   clickCount: number;
 
   @CreateDateColumn({ name: 'created_at' })
-  @Exclude()
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
-  @Exclude()
   updatedAt: Date;
 
   @DeleteDateColumn({ name: 'deleted_at' })

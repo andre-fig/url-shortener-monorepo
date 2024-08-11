@@ -50,8 +50,8 @@ export class UrlShortenerService {
 
     await this.shortenedUrlRepository.save(shortenedUrlEntity);
 
-    const baseUrl = process.env.BASE_URL;
-    const formattedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+    const baseUrl = process.env.BASE_URL?.trim();
+    const formattedBaseUrl = baseUrl.replace(/\/?$/, '/');
     const shortenedUrl = `${formattedBaseUrl}r/${shortCode}`;
 
     return user ? { shortenedUrl, user } : { shortenedUrl };
@@ -110,7 +110,7 @@ export class UrlShortenerService {
     const normalizedUrl = this.normalizeUrl(updateShortenedUrlDto.originalUrl);
 
     Object.assign(shortenedUrl, { originalUrl: normalizedUrl });
-    return this.shortenedUrlRepository.save(shortenedUrl);
+    return await this.shortenedUrlRepository.save(shortenedUrl);
   }
 
   public async deleteShortenedUrl(

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2024-08-11
+
+### Added
+
+- Implemented JWT authentication for URL shortening service routes via KrakenD.
+- Added endpoints to list, update, and delete shortened URLs.
+
 ## [0.2.0] - 2024-08-10
 
 ### Added
