@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -29,7 +33,33 @@ export class AuthService {
     return this.usersRepository.save(newUser);
   }
 
-  public async validateUser(
+  public async authenticateUser(
+    email: string,
+    password: string,
+  ): Promise<{ access_token: { sub: string; exp: number } }> {
+    const user = await this.validateUser(email, password);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const stringUserId = user.id.toString();
+
+    const sub = this.jwtService.sign({ sub: stringUserId });
+    const { exp } = this.jwtService.decode(sub) as { exp: number };
+
+    return {
+      access_token: {
+        sub: stringUserId,
+        exp,
+      },
+    };
+  }
+
+  public async validateUserById(id: number): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { id } });
+  }
+
+  private async validateUser(
     email: string,
     password: string,
   ): Promise<User | null> {
@@ -38,17 +68,6 @@ export class AuthService {
       return user;
     }
     return null;
-  }
-
-  public async validateUserById(id: number): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
-  }
-
-  public async generateJwt(user: User): Promise<{ accessToken: string }> {
-    const payload = { email: user.email, sub: user.id };
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
   }
 
   private async hashPassword(password: string): Promise<string> {

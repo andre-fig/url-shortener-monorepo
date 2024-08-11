@@ -2,7 +2,6 @@ import {
   Controller,
   Post,
   Body,
-  UnauthorizedException,
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
@@ -12,30 +11,25 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { LoginUserDto } from './dtos/login-user.dto';
 
 @Controller('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Post('register')
-  public async register(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return await this.authService.registerUser(
+  @Post('signup')
+  public async signup(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.authService.registerUser(
       createUserDto.email,
       createUserDto.password,
     );
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post('login')
-  public async login(
-    @Body() loginUserDto: LoginUserDto,
-  ): Promise<{ accessToken: string }> {
-    const user = await this.authService.validateUser(
+  public async login(@Body() loginUserDto: LoginUserDto): Promise<{
+    access_token: { sub: string; exp: number };
+  }> {
+    return await this.authService.authenticateUser(
       loginUserDto.email,
       loginUserDto.password,
     );
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return this.authService.generateJwt(user);
   }
 }

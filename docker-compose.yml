@@ -51,5 +51,16 @@ services:
     depends_on:
       - postgres
 
+  krakend:
+    image: devopsfaith/krakend:2.0
+    volumes:
+      - ./krakend:/etc/krakend
+    ports:
+      - "8080:8080"
+    command: run -c /etc/krakend/krakend.json --port 8080
+    depends_on:
+      - auth-service
+      - url-shortener
+
 volumes:
   pgdata:

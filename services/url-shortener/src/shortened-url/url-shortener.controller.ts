@@ -4,16 +4,20 @@ import {
   Body,
   Get,
   Param,
-  Headers,
   UseInterceptors,
   ClassSerializerInterceptor,
   NotFoundException,
   Res,
+  Patch,
+  Delete,
 } from '@nestjs/common';
 import { UrlShortenerService } from './url-shortener.service';
 import { CreateShortenedUrlDto } from './dtos/create-shortened-url.dto';
 import { Response } from 'express';
 import { User } from './entities/user.entity';
+import { UpdateShortenedUrlDto } from './dtos/update-shortened-url.dto';
+import { ShortenedUrl } from './entities/shortened-url.entity';
+import { GetUserId } from '../common/decorators/get-user-id.decorator';
 
 @Controller('shortened-url')
 export class UrlShortenerController {
@@ -23,11 +27,11 @@ export class UrlShortenerController {
   @Post()
   public async shortenUrl(
     @Body() createShortenedUrlDto: CreateShortenedUrlDto,
-    @Headers('Authorization') authorization: string,
+    @GetUserId() userId: number | undefined,
   ): Promise<{ shortenedUrl: string; user?: User }> {
     return this.urlShortenerService.createShortenedUrl(
       createShortenedUrlDto,
-      authorization,
+      userId,
     );
   }
 
@@ -42,5 +46,34 @@ export class UrlShortenerController {
       throw new NotFoundException('URL not found');
     }
     res.redirect(originalUrl);
+  }
+
+  @Get()
+  public async getUserShortenedUrls(
+    @GetUserId() userId: number,
+  ): Promise<ShortenedUrl[]> {
+    return this.urlShortenerService.getUserShortenedUrls(userId);
+  }
+
+  @Patch(':shortCode')
+  public async updateShortenedUrl(
+    @Param('shortCode') shortCode: string,
+    @Body() updateShortenedUrlDto: UpdateShortenedUrlDto,
+    @GetUserId() userId: number,
+  ): Promise<{ message: string }> {
+    await this.urlShortenerService.updateShortenedUrl(
+      shortCode,
+      updateShortenedUrlDto,
+      userId,
+    );
+    return { message: 'Shortened URL updated successfully' };
+  }
+
+  @Delete(':shortCode')
+  public async deleteShortenedUrl(
+    @Param('shortCode') shortCode: string,
+    @GetUserId() userId: number,
+  ) {
+    return this.urlShortenerService.deleteShortenedUrl(shortCode, userId);
   }
 }

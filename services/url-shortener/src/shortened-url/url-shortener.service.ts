@@ -1,10 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShortenedUrl } from './entities/shortened-url.entity';
 import { CreateShortenedUrlDto } from './dtos/create-shortened-url.dto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from './entities/user.entity';
+import { UpdateShortenedUrlDto } from './dtos/update-shortened-url.dto';
 
 @Injectable()
 export class UrlShortenerService {
@@ -18,13 +23,16 @@ export class UrlShortenerService {
 
   public async createShortenedUrl(
     createShortenedUrlDto: CreateShortenedUrlDto,
-    authorization: string,
+    userId?: number,
   ): Promise<{ shortenedUrl: string; user?: User }> {
     let user: User | null = null;
 
-    if (authorization) {
-      const token = this.extractToken(authorization);
-      user = await this.getUserFromToken(token);
+    if (userId) {
+      user = await this.userRepository.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
     }
 
     let shortCode: string;
@@ -62,19 +70,65 @@ export class UrlShortenerService {
     return shortenedUrl.originalUrl;
   }
 
-  private async getUserFromToken(token: string): Promise<User | null> {
-    try {
-      const decoded = this.jwtService.verify(token, {
-        secret: process.env.JWT_SECRET,
-      });
-      return await this.userRepository.findOne({ where: { id: decoded.sub } });
-    } catch (error) {
-      throw new UnauthorizedException('Invalid token');
+  public async getUserShortenedUrls(userId: number): Promise<ShortenedUrl[]> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
     }
+
+    return this.shortenedUrlRepository.find({
+      where: { user },
+      relations: ['user'],
+    });
   }
 
-  private extractToken(authorization: string): string {
-    return authorization.replace('Bearer ', '');
+  public async updateShortenedUrl(
+    shortCode: string,
+    updateShortenedUrlDto: UpdateShortenedUrlDto,
+    userId: number,
+  ): Promise<ShortenedUrl> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const shortenedUrl = await this.shortenedUrlRepository.findOne({
+      where: { shortCode, user },
+    });
+
+    if (!shortenedUrl) {
+      throw new NotFoundException(
+        'URL not found or you do not have permission',
+      );
+    }
+
+    Object.assign(shortenedUrl, updateShortenedUrlDto);
+    return this.shortenedUrlRepository.save(shortenedUrl);
+  }
+
+  public async deleteShortenedUrl(
+    shortCode: string,
+    userId: number,
+  ): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const shortenedUrl = await this.shortenedUrlRepository.findOne({
+      where: { shortCode, user },
+    });
+
+    if (!shortenedUrl) {
+      throw new NotFoundException(
+        'URL not found or you do not have permission',
+      );
+    }
+
+    await this.shortenedUrlRepository.softRemove(shortenedUrl);
   }
 
   private generateShortCode(): string {
