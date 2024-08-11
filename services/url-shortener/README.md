@@ -25,10 +25,10 @@ Para criar uma migration no seu projeto dentro de um contêiner Docker, siga os 
    Uma vez dentro do contêiner, execute o comando para gerar a migration. Certifique-se de que você está no diretório correto onde o TypeORM está configurado:
 
    ```bash
-   yarn typeorm migration:generate -d ./src/config/data-source.ts ./src/migrations/{NomeDaMigration}
+   yarn migration:generate ./src/migrations/{NomeDaMigration}
    ```
 
-   Este comando irá gerar uma nova migration chamada `InitialMigration` no diretório `src/migrations`.
+   Este comando irá gerar uma nova migration chamada {NomeDaMigration} no diretório `src/migrations`.
 
 4. **Saia do Contêiner:**
 
@@ -38,7 +38,7 @@ Para criar uma migration no seu projeto dentro de um contêiner Docker, siga os 
    exit
    ```
 
-## Notas:
+## Notas
 
 - **Verifique** se o arquivo `data-source.ts` está configurado corretamente com as entidades e as configurações do banco de dados.
 - **Certifique-se** de que o TypeORM e o ts-node estão instalados no ambiente Docker.

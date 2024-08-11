@@ -20,7 +20,7 @@ import { UrlShortenerModule } from './shortened-url/url-shortener.module';
       autoLoadEntities: true,
       synchronize: false,
     }),
-    UrlShortenerModule
+    UrlShortenerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

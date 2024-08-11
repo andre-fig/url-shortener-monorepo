@@ -53,7 +53,7 @@
 
 - [ ] Testes Unitários:
   - Escrever testes unitários para todos os endpoints e funcionalidades usando Jest.
-- [ ] Validação de Entrada:
+- [X] Validação de Entrada:
   - Implementar validações de entrada para todos os campos necessários nos endpoints.
 
 ## 7. Documentação e Observabilidade
@@ -65,7 +65,7 @@
 
 ## 8. Deploy e Infraestrutura
 
-- [ ] Docker-Compose:
+- [X] Docker-Compose:
   - Configurar docker-compose para subir todo o ambiente localmente.
 - [ ] Deploy em Cloud Provider:
   - Configurar o deploy da aplicação em um cloud provider (como AWS ou Azure) e documentar no README.
@@ -85,9 +85,9 @@
 
 ## 10. Versão e Controle de Mudança
 
-- [ ] Changelog:
+- [X] Changelog:
   - Criar e manter um changelog.
-- [ ] Git Tags:
+- [X] Git Tags:
   - Definir Git tags para cada versão de release.
 
 ## 11. Boas Práticas e Qualidade de Código

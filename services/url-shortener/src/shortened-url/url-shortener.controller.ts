@@ -1,4 +1,15 @@
-import { Controller, Post, Body, Get, Param, Headers, UseInterceptors, ClassSerializerInterceptor, NotFoundException, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Headers,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  NotFoundException,
+  Res,
+} from '@nestjs/common';
 import { UrlShortenerService } from './url-shortener.service';
 import { CreateShortenedUrlDto } from './dtos/create-shortened-url.dto';
 import { Response } from 'express';
@@ -13,13 +24,20 @@ export class UrlShortenerController {
   public async shortenUrl(
     @Body() createShortenedUrlDto: CreateShortenedUrlDto,
     @Headers('Authorization') authorization: string,
-  ): Promise<{ shortenedUrl: string, user?: User }> {
-    return this.urlShortenerService.createShortenedUrl(createShortenedUrlDto, authorization);
+  ): Promise<{ shortenedUrl: string; user?: User }> {
+    return this.urlShortenerService.createShortenedUrl(
+      createShortenedUrlDto,
+      authorization,
+    );
   }
 
   @Get('redirect/:shortCode')
-  public async redirectToOriginal(@Param('shortCode') shortCode: string, @Res() res: Response): Promise<void> {
-    const originalUrl = await this.urlShortenerService.getOriginalUrl(shortCode);
+  public async redirectToOriginal(
+    @Param('shortCode') shortCode: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const originalUrl =
+      await this.urlShortenerService.getOriginalUrl(shortCode);
     if (!originalUrl) {
       throw new NotFoundException('URL not found');
     }

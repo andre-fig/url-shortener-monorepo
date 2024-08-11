@@ -14,7 +14,9 @@ export class AuthService {
   ) {}
 
   public async registerUser(email: string, password: string): Promise<User> {
-    const existingUser = await this.usersRepository.findOne({ where: { email } });
+    const existingUser = await this.usersRepository.findOne({
+      where: { email },
+    });
     if (existingUser) {
       throw new ConflictException('Email already in use');
     }

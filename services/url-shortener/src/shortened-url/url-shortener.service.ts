@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShortenedUrl } from './entities/shortened-url.entity';
@@ -19,30 +19,31 @@ export class UrlShortenerService {
   public async createShortenedUrl(
     createShortenedUrlDto: CreateShortenedUrlDto,
     authorization: string,
-  ): Promise<{ shortenedUrl: string, user?: User }> {
+  ): Promise<{ shortenedUrl: string; user?: User }> {
     let user: User | null = null;
-  
+
     if (authorization) {
-      const token = authorization.replace('Bearer ', '');
-      try {
-        const decoded = this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
-        user = await this.userRepository.findOne({ where: { id: decoded.sub } });
-      } catch (error) {
-        throw new UnauthorizedException('Invalid token');
-      }
+      const token = this.extractToken(authorization);
+      user = await this.getUserFromToken(token);
     }
-  
-    const shortCode = this.generateShortCode();
+
+    let shortCode: string;
+    do {
+      shortCode = this.generateShortCode();
+    } while (
+      await this.shortenedUrlRepository.findOne({ where: { shortCode } })
+    );
+
     const shortenedUrlEntity = this.shortenedUrlRepository.create({
       ...createShortenedUrlDto,
       shortCode,
       user,
     });
-  
+
     await this.shortenedUrlRepository.save(shortenedUrlEntity);
-  
+
     const shortenedUrl = `${process.env.BASE_URL}/shortened-url/redirect/${shortCode}`;
-  
+
     return user ? { shortenedUrl, user } : { shortenedUrl };
   }
 
@@ -50,7 +51,7 @@ export class UrlShortenerService {
     const shortenedUrl = await this.shortenedUrlRepository.findOne({
       where: { shortCode },
     });
-    
+
     if (!shortenedUrl) {
       return null;
     }
@@ -59,6 +60,21 @@ export class UrlShortenerService {
     await this.shortenedUrlRepository.save(shortenedUrl);
 
     return shortenedUrl.originalUrl;
+  }
+
+  private async getUserFromToken(token: string): Promise<User | null> {
+    try {
+      const decoded = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      return await this.userRepository.findOne({ where: { id: decoded.sub } });
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  private extractToken(authorization: string): string {
+    return authorization.replace('Bearer ', '');
   }
 
   private generateShortCode(): string {
