@@ -39,6 +39,12 @@ git clone https://github.com/andre-fig/url-shortener-monorepo
 cd url-shortener-monorepo
 ```
 
+2. Instale as dependências:
+
+```bash
+yarn install
+```
+
 2. Execute os contêineres:
 
 ```bash
@@ -47,21 +53,18 @@ docker-compose up --build
 
 3. Acesse a documentação da API no Swagger:
 
-- http://localhost:8081/
+- http://localhost:8000/auth-service
+- http://localhost:8000/url-shortener
 
 ## Testes
 
 Este projeto inclui testes unitários para os serviços de autenticação e encurtamento de URLs.
 
+```bash
+yarn test:cov
+```
+
 ## Pontos de Melhoria
-
-### Versão Enterprise do KrakenD
-
-Atualmente, o sistema utiliza o KrakenD para roteamento e agregação de serviços. No entanto, algumas funcionalidades avançadas, como redirecionamento automático e suporte completo ao Swagger UI, estão disponíveis apenas na [versão Enterprise do KrakenD](https://www.krakend.io/docs/enterprise/backends/client-redirect/). Para contornar essas limitações:
-
-- Swagger UI: Um contêiner separado foi criado para servir a documentação da API via Swagger, acessível em http://localhost:8081/.
-
-- Redirecionamento de URLs: Quando a requisição ocorre através do krakend, em vez de utilizar redirecionamentos 30x (não suportados na versão open-source do KrakenD), foi implementado um redirecionamento via JavaScript que retorna um status 200.
 
 ### Escalabilidade Horizontal
 
