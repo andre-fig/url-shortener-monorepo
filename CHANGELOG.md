@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [0.4.0] - 2024-08-12
 
+### Added
+
 - Introduced Kong as the API Gateway for handling route redirections.
 
 ## [0.3.0] - 2024-08-11
