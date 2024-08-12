@@ -275,21 +275,19 @@ describe('UrlShortenerService', () => {
 
       const result = await urlShortenerService.getUserShortenedUrls(userId);
 
-      expect(result).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: 'uuid',
-            originalUrl: 'https://example.com',
-            shortCode: 'abc123',
-            user: mockUser,
-            clickCount: 0,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            deletedAt: null,
-            shortenedUrl: expect.stringContaining('abc123'),
-          }),
-        ]),
-      );
+      expect(result).toEqual([
+        expect.objectContaining({
+          id: 'uuid',
+          originalUrl: 'https://example.com',
+          shortCode: 'abc123',
+          user: mockUser,
+          clickCount: 0,
+          createdAt: mockShortenedUrls[0].createdAt,
+          updatedAt: mockShortenedUrls[0].updatedAt,
+          deletedAt: null,
+          shortenedUrl: expect.stringContaining('abc123'),
+        }),
+      ]);
 
       expect(shortenedUrlRepository.find).toHaveBeenCalledWith({
         where: { user: { id: userId } },

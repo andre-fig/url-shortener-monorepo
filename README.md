@@ -44,10 +44,11 @@ cd url-shortener-monorepo
 yarn install
 ```
 
-3. Execute os contêineres:
+3. xecute os contêineres:
 
 ```bash
-docker-compose up --build
+docker-compose build
+docker-compose up
 ```
 
 4. Acesse a documentação da API no Swagger:
