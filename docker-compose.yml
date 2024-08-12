@@ -22,6 +22,7 @@ services:
     volumes:
       - ./services/url-shortener:/app
       - /app/node_modules
+      - /node_modules
     environment:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
@@ -42,6 +43,7 @@ services:
     volumes:
       - ./services/auth-service:/app
       - /app/node_modules
+      - /node_modules
     environment:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432

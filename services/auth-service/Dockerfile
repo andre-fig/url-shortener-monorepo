@@ -3,17 +3,11 @@ FROM node:20 AS development
 WORKDIR /app
 
 # Copiar o yarn.lock da raiz do monorepo e o package.json específico do serviço
-COPY ../../yarn.lock ./
+COPY yarn.lock ./
 COPY ./services/auth-service/package.json ./
 
 # Instalar dependências de desenvolvimento
 RUN yarn install --frozen-lockfile
-
-# Instalar o NestJS CLI globalmente
-RUN yarn global add @nestjs/cli
-
-# Instalar o TypeORM CLI globalmente
-RUN yarn global add typeorm ts-node
 
 # Copiar o restante do código do serviço para o contêiner
 COPY ./services/auth-service ./
