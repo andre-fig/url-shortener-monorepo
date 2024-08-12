@@ -21,8 +21,7 @@
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
     "migration:generate": "yarn typeorm migration:generate -d ./src/config/data-source.ts",
     "migration:run": "yarn typeorm migration:run -d ./src/config/data-source.ts",
-    "migration:revert": "yarn typeorm migration:revert -d ./src/config/data-source.ts",
-    "prepare": "husky"
+    "migration:revert": "yarn typeorm migration:revert -d ./src/config/data-source.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.10",
@@ -81,14 +80,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "**/*.{json,md,yml}": [
-      "prettier --write"
-    ]
   }
 }

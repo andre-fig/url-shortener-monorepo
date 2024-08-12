@@ -1,105 +1,106 @@
-# Propostas de melhorias
+# URL Shortener API
 
-## Redirecionamento de URLs no Projeto
+## Sumário
 
-### Contexto
+1. [Descrição](#descrição)
+2. [Funcionalidades](#funcionalidades)
+3. [Pré-requisitos](#pré-requisitos)
+4. [Instalação](#instalação)
+5. [Configuração](#configuração)
+6. [Executando a Aplicação](#executando-a-aplicação)
+   - [Usando Docker](#usando-docker)
+7. [Testes](#testes)
+8. [Pontos de Melhoria](#pontos-de-melhoria)
+   - [Versão Enterprise do KrakenD](#versão-enterprise-do-krakend)
+   - [Escalabilidade Horizontal](#escalabilidade-horizontal)
+   - [Migração para OAuth](#migração-para-oauth)
+9. [To-Do List](#to-do-list)
+   - [Configuração Inicial do Projeto](#1-.configuração-inicial-do-projeto)
+   - [Estruturação do Banco de Dados](#2-.estruturação-do-banco-de-dados)
+   - [Autenticação e Autorização](#3-.autenticação-e-autorização)
+   - [Implementação dos Endpoints](#4-.implementação-dos-endpoints)
+   - [Redirecionamento e Contabilização de Cliques](#5-.redirecionamento-e-contabilização-de-cliques)
+   - [Testes e Validações](#6-.testes-e-validações)
+   - [Documentação e Observabilidade](#7-.documentação-e-observabilidade)
+   - [Deploy e Infraestrutura](#8-.deploy-e-infraestrutura)
+   - [Melhoria e Escalabilidade](#9-.melhoria-e-escalabilidade)
+   - [Versão e Controle de Mudança](#10-.versão-e-controle-de-mudança)
+   - [Boas Práticas e Qualidade de Código](#11-.boas-práticas-e-qualidade-de-código)
 
-No projeto atual, utliza-se o KrakenD como API Gateway para gerenciar o redirecionamento de URLs encurtadas. Durante a implementação, identificou-se uma limitação na versão Community do KrakenD relacionada ao gerenciamento de redirecionamentos HTTP (códigos 301/302). A limitação ocorre porque a versão Community do KrakenD segue redirecionamentos internamente, exibindo o conteúdo final da URL de destino em vez de simplesmente passar a resposta de redirecionamento para o cliente. Mais detalhes podem ser encontrados na [documentação do KrakenD](https://www.krakend.io/docs/enterprise/backends/client-redirect/).
+## Descrição
 
-### Limitação Identificada
+Este projeto é uma API RESTful para encurtamento de URLs, construída com Node.js utilizando o framework NestJS. A aplicação permite que usuários criem URLs encurtadas, gerenciem essas URLs (listar, atualizar, excluir) e acompanhem o número de cliques em cada URL. A autenticação de usuários é feita utilizando JWT (JSON Web Token).
 
-Na versão Community do KrakenD, não existe uma opção nativa para impedir que o KrakenD siga redirecionamentos internamente. Isso resulta na exibição do conteúdo final ao cliente, o que não é o comportamento desejado para o nosso projeto de encurtamento de URLs. O comportamento correto seria que o cliente seguisse o redirecionamento, o que requer que o KrakenD retorne o status 301/302 e o cabeçalho `Location` diretamente ao cliente, sem seguir o redirecionamento.
+## Funcionalidades
 
-### Solução temporária
+- Cadastro de usuários e autenticação via e-mail e senha.
+- Encurtamento de URLs com geração de códigos curtos (de 6 caracteres).
+- Redirecionamento automático para URLs originais utilizando códigos curtos.
+- Listagem de URLs encurtadas para usuários autenticados, incluindo contagem de cliques.
+- Atualização e exclusão lógica de URLs encurtadas.
+- Documentação da API disponível via Swagger.
 
-Atualmente, a alternativa implementada utiliza um redirecionamento com JavaScript, onde o backend responde com um status 200 e um HTML contendo uma tag `<meta>` que faz o redirecionamento automático:
+## Pré-requisitos
 
-```typescript
-res.send(`
-    <html>
-      <head>
-        <meta http-equiv="refresh" content="0; url=${originalUrl}" />
-      </head>
-      <body>
-        <p>Redirecting to <a href="${originalUrl}">${originalUrl}</a></p>
-      </body>
-    </html>
-`);
+- Node.js (v20.x)
+- Yarn
+- Docker
+- Docker Compose
+
+## Instalação
+
+1. Clone o repositório:
+
+```bash
+git clone https://seu-repositorio.git
+cd seu-repositorio
 ```
 
-#### Limitações e Problemas dessa Solução:
+## Executando a Aplicação
 
-1. **SEO Comprometido**: Motores de busca podem não interpretar corretamente o redirecionamento via `<meta>`, prejudicando a indexação e o SEO da aplicação.
+### Usando Docker
 
-2. **Experiência do Usuário**: O redirecionamento via `<meta>` pode causar uma leve demora e, se o JavaScript estiver desativado, o redirecionamento pode falhar.
+Build e execução dos contêineres:
 
-3. **Falta de Controle**: O redirecionamento no frontend limita o controle e a rastreabilidade no backend, dificultando auditorias e testes automatizados.
-   - A compatibilidade com diferentes navegadores e dispositivos pode variar, especialmente em ambientes onde as configurações de segurança são mais restritivas.
-   - Em redes com proxies que não processam corretamente o conteúdo HTML, o redirecionamento pode ser bloqueado ou ignorado.
-
-### Melhoria Proposta
-
-#### 1. Utilização do KrakenD Enterprise Edition
-
-Se o projeto permitir, a migração para o **KrakenD Enterprise Edition** resolverá essa limitação. No KrakenD Enterprise, pode-se utilizar a configuração `no_redirect` para evitar que o gateway siga o redirecionamento.
-
-##### Passos para Implementação:
-
-- **Adição do `extra_config` no `krakend.json`**:
-
-  No arquivo `krakend.json`, adicione a configuração abaixo no backend correspondente:
-
-```json
-{
-  "endpoint": "/r/{id}",
-  "method": "GET",
-  "output_encoding": "no-op",
-  "backend": [
-    {
-      "host": ["http://url-shortener:3000"],
-      "url_pattern": "shortened-url/redirect/{id}",
-      "encoding": "no-op",
-      "extra_config": {
-        "backend/http/client": {
-          "no_redirect": true
-        }
-      }
-    }
-  ]
-}
+```bash
+docker-compose up --build
 ```
 
-- **Alteração no Código do Backend**:
+### Usando a Aplicação
 
-  No código do backend, altere a resposta para utilizar o método `res.redirect(originalUrl)`:
+Acesse a documentação da API no Swagger:
 
-```typescript
-  @Get('redirect/:shortCode')
-  public async redirectToOriginal(
-  @Param('shortCode') shortCode: string,
-  @Res() res: Response,
-  ): Promise<void> {
-  const originalUrl = await this.urlShortenerService.getOriginalUrl(shortCode);
-  if (!originalUrl) {
-  throw new NotFoundException('URL not found');
-  }
-  res.redirect(originalUrl);
-  }
-```
+- http://localhost:8081/
 
-Essa alteração permitirá que o cliente siga o redirecionamento sem que o KrakenD siga a URL e exiba o conteúdo final.
+## Testes
 
-#### 2. Alternativa: Rota Disponível sem Utilizar o KrakenD
+Este projeto inclui testes unitários para os serviços de autenticação e encurtamento de URLs.
 
-Se a migração para o KrakenD Enterprise Edition não for viável, uma alternativa seria deixar a rota `redirect/:shortCode` disponível diretamente no backend, sem passar pelo KrakenD. Isso evita a limitação de seguir redirecionamentos e permite que o cliente lide com o redirecionamento como esperado.
+## Pontos de Melhoria
 
-### Conclusão
+### Versão Enterprise do KrakenD
 
-A melhoria proposta visa corrigir o comportamento indesejado de redirecionamento na versão Community do KrakenD, utilizando a funcionalidade `no_redirect` disponível na versão Enterprise. Essa melhoria permitirá que o cliente final siga os redirecionamentos corretamente, oferecendo uma experiência de usuário consistente e alinhada com os requisitos do projeto. Caso a migração para o KrakenD Enterprise não seja possível, a alternativa de expor a rota diretamente no backend é uma solução viável.
+Atualmente, o sistema utiliza o KrakenD para roteamento e agregação de serviços. No entanto, algumas funcionalidades avançadas, como redirecionamento automático e suporte completo ao Swagger UI, estão disponíveis apenas na [versão Enterprise do KrakenD](https://www.krakend.io/docs/enterprise/backends/client-redirect/). Para contornar essas limitações:
 
-# To-Do List
+- Swagger UI: Um contêiner separado foi criado para servir a documentação da API via Swagger, acessível em http://localhost:8081/.
 
-## 1. Configuração Inicial do Projeto
+- Redirecionamento de URLs: Quando a requisição ocorre através do krakend, em vez de utilizar redirecionamentos 30x (não suportados na versão open-source do KrakenD), foi implementado um redirecionamento via JavaScript que retorna um status 200.
+
+### Escalabilidade Horizontal
+
+Para suportar um crescimento horizontal, onde o sistema precisa ser escalado para múltiplas instâncias, algumas melhorias podem ser implementadas:
+
+- Divisão de Serviços: Separar os serviços em microsserviços independentes, cada um com seu próprio banco de dados, permitindo que sejam escalados de forma independente.
+
+- Cache: Implementar um sistema de cache, como Redis, para armazenar URLs encurtadas e reduzir a carga no banco de dados.
+
+### Migração para OAuth
+
+A autenticação atual é baseada em JWT com login/senha. Para aumentar a segurança e facilitar a integração com outros serviços, uma migração para OAuth2 ou OpenID Connect pode ser considerada, permitindo o uso de provedores de identidade como Google ou um servidor OAuth próprio.
+
+## To-Do List
+
+### 1. Configuração Inicial do Projeto
 
 - [x] Configuração do Monorepo:
   - Estruturar o projeto como um monorepo para separar serviços (gerenciamento de identidade e encurtamento de URL).
@@ -110,7 +111,7 @@ A melhoria proposta visa corrigir o comportamento indesejado de redirecionamento
   - Configurar Swagger para documentação da API.
   - Configurar variáveis de ambiente para parâmetros como conexão ao banco de dados, porta do servidor, etc.
 
-## 2. Estruturação do Banco de Dados
+### 2. Estruturação do Banco de Dados
 
 - [x] Modelagem de Tabelas:
   - Usuários: Tabela para armazenar informações de usuários (e-mail, senha, data de criação, data de atualização, data de exclusão).
@@ -118,7 +119,7 @@ A melhoria proposta visa corrigir o comportamento indesejado de redirecionamento
 - [x] Migrations:
   - Implementar as migrations para a criação das tabelas no banco de dados.
 
-## 3. Autenticação e Autorização
+### 3. Autenticação e Autorização
 
 - [x] Cadastro de Usuários:
   - Criar endpoint para cadastro de usuários.
@@ -129,7 +130,7 @@ A melhoria proposta visa corrigir o comportamento indesejado de redirecionamento
 - [x] Autorização:
   - Proteger endpoints que requerem autenticação com JWT.
 
-## 4. Implementação dos Endpoints
+### 4. Implementação dos Endpoints
 
 - [x] Encurtamento de URLs:
   - Criar um endpoint para encurtar URLs, aceitando requisições com e sem autenticação.
@@ -142,27 +143,27 @@ A melhoria proposta visa corrigir o comportamento indesejado de redirecionamento
 - [x] Deleção Lógica de URLs Encurtadas:
   - Criar um endpoint para deletar logicamente uma URL encurtada, marcando o registro com a data de exclusão.
 
-## 5. Redirecionamento e Contabilização de Cliques
+### 5. Redirecionamento e Contabilização de Cliques
 
 - [x] Redirecionamento:
   - Criar um endpoint para redirecionar o usuário para a URL original ao acessar uma URL encurtada.
   - Incrementar o contador de cliques a cada acesso.
 
-## 6. Testes e Validações
+### 6. Testes e Validações
 
 - [x] Testes Unitários:
   - Escrever testes unitários para todos os endpoints e funcionalidades usando Jest.
 - [x] Validação de Entrada:
   - Implementar validações de entrada para todos os campos necessários nos endpoints.
 
-## 7. Documentação e Observabilidade
+### 7. Documentação e Observabilidade
 
 - [x] Swagger:
   - Documentar todos os endpoints usando Swagger.
 - [ ] Observabilidade:
   - Implementar ou abstrair logs, métricas e rastreamento (por exemplo, usando Sentry, Prometheus, etc.), configuráveis via variáveis de ambiente.
 
-## 8. Deploy e Infraestrutura
+### 8. Deploy e Infraestrutura
 
 - [x] Docker-Compose:
   - Configurar docker-compose para subir todo o ambiente localmente.
@@ -175,21 +176,21 @@ A melhoria proposta visa corrigir o comportamento indesejado de redirecionamento
 - [ ] CI/CD:
   - Configurar GitHub Actions para lint e testes automatizados.
 
-## 9. Melhoria e Escalabilidade
+### 9. Melhoria e Escalabilidade
 
-- [ ] Escalabilidade Horizontal:
+- [x] Escalabilidade Horizontal:
   - Documentar pontos de melhoria para escalabilidade horizontal, como divisão de serviços, cache, etc.
 - [ ] Multi-Tenant:
-  - Implementar suporte a multi-tenant se aplicável.
+  - Implementar suporte a multi-tenant (ainda não aplicável).
 
-## 10. Versão e Controle de Mudança
+### 10. Versão e Controle de Mudança
 
 - [x] Changelog:
   - Criar e manter um changelog.
 - [x] Git Tags:
   - Definir Git tags para cada versão de release.
 
-## 11. Boas Práticas e Qualidade de Código
+### 11. Boas Práticas e Qualidade de Código
 
 - [x] Pre-commit/Pre-push Hooks:
   - Configurar hooks para garantir qualidade do código.
