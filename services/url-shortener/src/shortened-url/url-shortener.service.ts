@@ -52,7 +52,7 @@ export class UrlShortenerService {
 
     const baseUrl = process.env.BASE_URL?.trim();
     const formattedBaseUrl = baseUrl.replace(/\/?$/, '');
-    const shortenedUrl = `${formattedBaseUrl}/shortened-url/${shortCode}`;
+    const shortenedUrl = `${formattedBaseUrl}/shortened-url/r/${shortCode}`;
 
     return user
       ? { originalUrl: normalizedUrl, shortenedUrl, user }

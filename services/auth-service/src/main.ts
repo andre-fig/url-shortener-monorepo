@@ -23,10 +23,11 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Auth Service')
     .setDescription('Authentication API')
+    .addServer('http://localhost:8000')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('auth-service', app, document);
 
   await app.listen(3000);
 }

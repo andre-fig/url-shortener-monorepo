@@ -23,11 +23,12 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('URL Shortener Service')
     .setDescription('URL Shortening API')
+    .addServer('http://localhost:8000')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('url-shortener', app, document);
 
   await app.listen(3000);
 }

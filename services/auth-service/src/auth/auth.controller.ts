@@ -55,7 +55,7 @@ export class AuthController {
     description: 'Invalid credentials.',
   })
   public async login(@Body() loginUserDto: LoginUserDto): Promise<{
-    access_token: { sub: string; exp: number };
+    access_token: string;
   }> {
     return await this.authService.authenticateUser(
       loginUserDto.email,

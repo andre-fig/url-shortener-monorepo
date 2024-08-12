@@ -62,7 +62,7 @@ export class UrlShortenerController {
     description: 'Successfully redirected to the original URL.',
   })
   @ApiResponse({ status: 404, description: 'URL not found.' })
-  @Get(':shortCode')
+  @Get('r/:shortCode')
   public async redirectToOriginal(
     @Param('shortCode') shortCode: string,
     @Res() res: Response,
@@ -73,16 +73,7 @@ export class UrlShortenerController {
     if (!originalUrl) {
       throw new NotFoundException('URL not found');
     }
-    res.status(200).send(`
-    <html>
-      <head>
-        <meta http-equiv="refresh" content="0; url=${originalUrl}" />
-      </head>
-      <body>
-        <p>Redirecting to <a href="${originalUrl}">${originalUrl}</a></p>
-      </body>
-    </html>
-  `);
+    res.redirect(originalUrl);
   }
 
   @ApiBearerAuth()
@@ -94,7 +85,7 @@ export class UrlShortenerController {
     description: 'Successfully retrieved the list of shortened URLs.',
     type: [ShortenedUrl],
   })
-  @Get()
+  @Get('all')
   public async getUserShortenedUrls(
     @GetUserId() userId: number,
   ): Promise<ShortenedUrl[]> {

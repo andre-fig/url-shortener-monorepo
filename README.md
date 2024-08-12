@@ -5,27 +5,12 @@
 1. [Descrição](#descrição)
 2. [Funcionalidades](#funcionalidades)
 3. [Pré-requisitos](#pré-requisitos)
-4. [Instalação](#instalação)
-5. [Configuração](#configuração)
-6. [Executando a Aplicação](#executando-a-aplicação)
-   - [Usando Docker](#usando-docker)
-7. [Testes](#testes)
-8. [Pontos de Melhoria](#pontos-de-melhoria)
+4. [Usando a Aplicação](#usando-a-aplicação)
+5. [Testes](#testes)
+6. [Pontos de Melhoria](#pontos-de-melhoria)
    - [Versão Enterprise do KrakenD](#versão-enterprise-do-krakend)
    - [Escalabilidade Horizontal](#escalabilidade-horizontal)
    - [Migração para OAuth](#migração-para-oauth)
-9. [To-Do List](#to-do-list)
-   - [Configuração Inicial do Projeto](#1-.configuração-inicial-do-projeto)
-   - [Estruturação do Banco de Dados](#2-.estruturação-do-banco-de-dados)
-   - [Autenticação e Autorização](#3-.autenticação-e-autorização)
-   - [Implementação dos Endpoints](#4-.implementação-dos-endpoints)
-   - [Redirecionamento e Contabilização de Cliques](#5-.redirecionamento-e-contabilização-de-cliques)
-   - [Testes e Validações](#6-.testes-e-validações)
-   - [Documentação e Observabilidade](#7-.documentação-e-observabilidade)
-   - [Deploy e Infraestrutura](#8-.deploy-e-infraestrutura)
-   - [Melhoria e Escalabilidade](#9-.melhoria-e-escalabilidade)
-   - [Versão e Controle de Mudança](#10-.versão-e-controle-de-mudança)
-   - [Boas Práticas e Qualidade de Código](#11-.boas-práticas-e-qualidade-de-código)
 
 ## Descrição
 
@@ -45,7 +30,7 @@ Este projeto é uma API RESTful para encurtamento de URLs, construída com Node.
 - Docker
 - Docker Compose
 
-## Instalação
+## Usando a Aplicação
 
 1. Clone o repositório:
 
@@ -54,19 +39,13 @@ git clone https://github.com/andre-fig/url-shortener-monorepo
 cd url-shortener-monorepo
 ```
 
-## Executando a Aplicação
-
-### Usando Docker
-
-Build e execução dos contêineres:
+2. Execute os contêineres:
 
 ```bash
 docker-compose up --build
 ```
 
-### Usando a Aplicação
-
-Acesse a documentação da API no Swagger:
+3. Acesse a documentação da API no Swagger:
 
 - http://localhost:8081/
 

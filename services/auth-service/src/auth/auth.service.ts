@@ -36,21 +36,20 @@ export class AuthService {
   public async authenticateUser(
     email: string,
     password: string,
-  ): Promise<{ access_token: { sub: string; exp: number } }> {
+  ): Promise<{ access_token: string }> {
     const user = await this.validateUser(email, password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const stringUserId = user.id.toString();
-    const sub = this.jwtService.sign({ sub: stringUserId });
-    const { exp } = this.jwtService.decode(sub) as { exp: number };
+    const token = this.jwtService.sign({
+      sub: stringUserId,
+      iss: 'auth-service',
+    });
 
     return {
-      access_token: {
-        sub: stringUserId,
-        exp,
-      },
+      access_token: token,
     };
   }
 
