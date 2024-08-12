@@ -7,7 +7,7 @@ COPY ../../yarn.lock ./
 COPY ./services/url-shortener/package.json ./
 
 # Instalar dependências de desenvolvimento
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
 # Instalar o NestJS CLI globalmente
 RUN yarn global add @nestjs/cli

@@ -50,9 +50,7 @@ export class UrlShortenerService {
 
     await this.shortenedUrlRepository.save(shortenedUrlEntity);
 
-    const baseUrl = process.env.BASE_URL?.trim();
-    const formattedBaseUrl = baseUrl.replace(/\/?$/, '');
-    const shortenedUrl = `${formattedBaseUrl}/shortened-url/r/${shortCode}`;
+    const shortenedUrl = this.buildShortenedUrl(shortCode);
 
     return user
       ? { originalUrl: normalizedUrl, shortenedUrl, user }
@@ -83,9 +81,14 @@ export class UrlShortenerService {
       throw new UnauthorizedException('User not found');
     }
 
-    return await this.shortenedUrlRepository.find({
+    const urls = await this.shortenedUrlRepository.find({
       where: { user: { id: userId } },
     });
+
+    return urls.map((url) => ({
+      ...url,
+      shortenedUrl: this.buildShortenedUrl(url.shortCode),
+    }));
   }
 
   public async updateShortenedUrl(
@@ -149,5 +152,11 @@ export class UrlShortenerService {
       trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://');
 
     return hasValidProtocol ? trimmedUrl : `http://${trimmedUrl}`;
+  }
+
+  private buildShortenedUrl(shortCode: string): string {
+    const baseUrl = process.env.BASE_URL?.trim();
+    const formattedBaseUrl = baseUrl.replace(/\/?$/, '');
+    return `${formattedBaseUrl}/shortened-url/r/${shortCode}`;
   }
 }

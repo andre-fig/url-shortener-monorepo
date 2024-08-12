@@ -8,7 +8,6 @@
 4. [Usando a Aplicação](#usando-a-aplicação)
 5. [Testes](#testes)
 6. [Pontos de Melhoria](#pontos-de-melhoria)
-   - [Versão Enterprise do KrakenD](#versão-enterprise-do-krakend)
    - [Escalabilidade Horizontal](#escalabilidade-horizontal)
    - [Migração para OAuth](#migração-para-oauth)
 
@@ -27,8 +26,8 @@ Este projeto é uma API RESTful para encurtamento de URLs, construída com Node.
 
 ## Pré-requisitos
 
+- Node >=18
 - Docker
-- Docker Compose
 
 ## Usando a Aplicação
 
@@ -45,13 +44,13 @@ cd url-shortener-monorepo
 yarn install
 ```
 
-2. Execute os contêineres:
+3. Execute os contêineres:
 
 ```bash
 docker-compose up --build
 ```
 
-3. Acesse a documentação da API no Swagger:
+4. Acesse a documentação da API no Swagger:
 
 - http://localhost:8000/auth-service
 - http://localhost:8000/url-shortener

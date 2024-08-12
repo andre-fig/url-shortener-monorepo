@@ -1,20 +1,20 @@
-_format_version: "3.0"
+_format_version: '3.0'
 
 consumers:
   - username: login_server_issuer
 
 jwt_secrets:
   - consumer: login_server_issuer
-    key: "auth-service"
-    secret: "your_jwt_secret"
+    key: 'auth-service'
+    secret: 'your_jwt_secret'
 
 services:
   - name: auth-service
     url: http://auth-service:3000
     routes:
-      - name: swagger
+      - name: hello-world
         paths:
-          - /auth-service
+          - /
         methods:
           - GET
         strip_path: false
@@ -29,6 +29,12 @@ services:
           - /auth/login
         methods:
           - POST
+        strip_path: false
+      - name: swagger
+        paths:
+          - /auth-service
+        methods:
+          - GET
         strip_path: false
 
   - name: url-shortener
@@ -93,7 +99,7 @@ plugins:
   - name: cors
     config:
       origins:
-        - "*"
+        - '*'
       methods:
         - GET
         - POST

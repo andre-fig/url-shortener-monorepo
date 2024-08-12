@@ -27,7 +27,7 @@ import { UpdateShortenedUrlDto } from './dtos/update-shortened-url.dto';
 import { ShortenedUrl } from './entities/shortened-url.entity';
 import { GetUserId } from '../common/decorators/get-user-id.decorator';
 
-@ApiTags('URL Shortener')
+@ApiTags('Shortened URL')
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('shortened-url')
 export class UrlShortenerController {
