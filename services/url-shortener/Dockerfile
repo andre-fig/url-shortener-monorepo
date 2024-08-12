@@ -16,4 +16,5 @@ COPY ./services/url-shortener ./
 EXPOSE 3000
 
 # Comando para iniciar a aplicação em modo de desenvolvimento
-CMD ["yarn", "start:dev"]
+CMD ["sh", "-c", "yarn migration:run && yarn start:dev"]
+
