@@ -75,9 +75,7 @@ describe('AuthController', () => {
         password: 'password123',
       };
 
-      const accessToken = {
-        access_token: { sub: '1', exp: 123456 },
-      };
+      const accessToken = { access_token: 'signedToken' };
 
       jest
         .spyOn(authService, 'authenticateUser')

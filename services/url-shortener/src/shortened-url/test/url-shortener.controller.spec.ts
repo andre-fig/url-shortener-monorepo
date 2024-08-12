@@ -66,6 +66,7 @@ describe('UrlShortenerController', () => {
       const res = {
         status: jest.fn().mockReturnThis(),
         send: jest.fn(),
+        redirect: jest.fn(),
       } as unknown as Response;
 
       const shortCode = 'abc123';
@@ -80,8 +81,7 @@ describe('UrlShortenerController', () => {
       expect(urlShortenerService.getOriginalUrl).toHaveBeenCalledWith(
         shortCode,
       );
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.send).toHaveBeenCalledWith(
+      expect(res.redirect).toHaveBeenCalledWith(
         expect.stringContaining(originalUrl),
       );
     });

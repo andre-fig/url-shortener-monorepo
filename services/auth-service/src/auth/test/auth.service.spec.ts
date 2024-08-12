@@ -85,13 +85,18 @@ describe('AuthService', () => {
       jest.spyOn(jwtService, 'sign').mockReturnValue('signedToken');
       jest.spyOn(jwtService, 'decode').mockReturnValue({ exp: 123456 });
 
+      const accessToken = { access_token: 'signedToken' };
+
       const result = await authService.authenticateUser(email, password);
 
-      expect(result).toEqual({ access_token: { sub: '1', exp: 123456 } });
+      expect(result).toEqual(accessToken);
       expect(usersRepository.findOne).toHaveBeenCalledWith({
         where: { email },
       });
-      expect(jwtService.sign).toHaveBeenCalledWith({ sub: '1' });
+      expect(jwtService.sign).toHaveBeenCalledWith({
+        sub: '1',
+        iss: 'auth-service',
+      });
     });
 
     it('should throw an UnauthorizedException if credentials are invalid', async () => {
