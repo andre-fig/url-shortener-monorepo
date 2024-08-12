@@ -42,8 +42,6 @@ Este projeto é uma API RESTful para encurtamento de URLs, construída com Node.
 
 ## Pré-requisitos
 
-- Node.js (v20.x)
-- Yarn
 - Docker
 - Docker Compose
 
@@ -52,8 +50,8 @@ Este projeto é uma API RESTful para encurtamento de URLs, construída com Node.
 1. Clone o repositório:
 
 ```bash
-git clone https://seu-repositorio.git
-cd seu-repositorio
+git clone https://github.com/andre-fig/url-shortener-monorepo
+cd url-shortener-monorepo
 ```
 
 ## Executando a Aplicação
