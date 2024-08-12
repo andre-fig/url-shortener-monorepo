@@ -68,7 +68,10 @@ describe('UrlShortenerService', () => {
       );
 
       expect(result).toEqual({
-        shortenedUrl: expect.stringContaining('http://localhost:3000/r/'),
+        originalUrl: 'https://example.com',
+        shortenedUrl: expect.stringContaining(
+          'http://localhost:3000/shortened-url/',
+        ),
       });
       expect(shortenedUrlRepository.create).toHaveBeenCalledWith({
         originalUrl: 'https://example.com',
@@ -124,7 +127,10 @@ describe('UrlShortenerService', () => {
       );
 
       expect(result).toEqual({
-        shortenedUrl: expect.stringContaining('http://localhost:3000/r/'),
+        originalUrl: 'https://example.com',
+        shortenedUrl: expect.stringContaining(
+          'http://localhost:3000/shortened-url/',
+        ),
         user: mockUser,
       });
       expect(shortenedUrlRepository.create).toHaveBeenCalledWith({
@@ -169,7 +175,10 @@ describe('UrlShortenerService', () => {
       );
 
       expect(result).toEqual({
-        shortenedUrl: expect.stringContaining('http://localhost:3000/r/'),
+        originalUrl: 'https://example.com',
+        shortenedUrl: expect.stringContaining(
+          'http://localhost:3000/shortened-url/',
+        ),
       });
       expect(shortenedUrlRepository.create).toHaveBeenCalledWith({
         originalUrl: 'https://example.com',

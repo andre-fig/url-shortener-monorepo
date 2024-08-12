@@ -191,7 +191,7 @@ A melhoria proposta visa corrigir o comportamento indesejado de redirecionamento
 
 ## 11. Boas Práticas e Qualidade de Código
 
-- [ ] Pre-commit/Pre-push Hooks:
+- [x] Pre-commit/Pre-push Hooks:
   - Configurar hooks para garantir qualidade do código.
-- [ ] Código Tolerante a Falhas:
+- [x] Código Tolerante a Falhas:
   - Implementar práticas para garantir que o código seja tolerante a falhas.

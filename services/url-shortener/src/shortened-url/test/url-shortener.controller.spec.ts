@@ -39,7 +39,10 @@ describe('UrlShortenerController', () => {
       const createShortenedUrlDto: CreateShortenedUrlDto = {
         originalUrl: 'https://example.com',
       };
-      const result = { shortenedUrl: 'https://short.ly/abc123' };
+      const result = {
+        originalUrl: 'https://example.com',
+        shortenedUrl: 'https://short.ly/abc123',
+      };
 
       jest
         .spyOn(urlShortenerService, 'createShortenedUrl')

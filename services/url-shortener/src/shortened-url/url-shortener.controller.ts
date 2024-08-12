@@ -44,7 +44,7 @@ export class UrlShortenerController {
   public async shortenUrl(
     @Body() createShortenedUrlDto: CreateShortenedUrlDto,
     @GetUserId({ allowUndefined: true }) userId: number | undefined,
-  ): Promise<{ shortenedUrl: string; user?: User }> {
+  ): Promise<{ originalUrl: string; shortenedUrl: string; user?: User }> {
     return await this.urlShortenerService.createShortenedUrl(
       createShortenedUrlDto,
       userId,
@@ -62,7 +62,7 @@ export class UrlShortenerController {
     description: 'Successfully redirected to the original URL.',
   })
   @ApiResponse({ status: 404, description: 'URL not found.' })
-  @Get('redirect/:shortCode')
+  @Get(':shortCode')
   public async redirectToOriginal(
     @Param('shortCode') shortCode: string,
     @Res() res: Response,

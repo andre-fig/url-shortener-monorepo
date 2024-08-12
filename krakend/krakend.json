@@ -6,6 +6,17 @@
     },
     "security/http": {
       "is_development": true
+    },
+    "security/cors": {
+      "allow_methods": [
+        "GET",
+        "HEAD",
+        "PUT",
+        "PATCH",
+        "POST",
+        "DELETE",
+        "OPTIONS"
+      ]
     }
   },
   "endpoints": [
@@ -69,18 +80,6 @@
           "required": ["originalUrl"]
         }
       }
-    },
-    {
-      "endpoint": "/api/shortened-url/{id}",
-      "method": "GET",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "host": ["http://url-shortener:3000"],
-          "url_pattern": "shortened-url/redirect/{id}",
-          "output_encoding": "no-op"
-        }
-      ]
     },
     {
       "endpoint": "/api/shortened-url",

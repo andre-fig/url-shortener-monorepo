@@ -12,6 +12,8 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    allowedHeaders: 'Content-Type, Authorization',
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
@@ -22,7 +24,6 @@ async function bootstrap() {
     .setTitle('Auth Service')
     .setDescription('Authentication API')
     .setVersion('1.0')
-    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

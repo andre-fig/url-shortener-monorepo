@@ -9,6 +9,8 @@ services:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
 
   url-shortener:
     build:
@@ -26,9 +28,11 @@ services:
       DATABASE_USERNAME: youruser
       DATABASE_PASSWORD: yourpassword
       DATABASE_NAME: yourdatabase
-      BASE_URL: http://localhost:8080/
+      BASE_URL: http://localhost:3001/
     depends_on:
       - postgres
+    networks:
+      - app-network
 
   auth-service:
     build:
@@ -49,6 +53,8 @@ services:
       JWT_SECRET: your_jwt_secret
     depends_on:
       - postgres
+    networks:
+      - app-network
 
   krakend:
     image: devopsfaith/krakend:2.0
@@ -60,6 +66,22 @@ services:
     depends_on:
       - auth-service
       - url-shortener
+    networks:
+      - app-network
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8081:8080"
+    environment:
+      SWAGGER_JSON: /docs/swagger.json
+    volumes:
+      - ./docs:/docs
+    depends_on:
+      - krakend
 
 volumes:
   pgdata:
+
+networks:
+  app-network:

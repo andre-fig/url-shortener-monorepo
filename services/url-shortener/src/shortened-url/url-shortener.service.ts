@@ -22,7 +22,7 @@ export class UrlShortenerService {
   public async createShortenedUrl(
     createShortenedUrlDto: CreateShortenedUrlDto,
     userId?: number,
-  ): Promise<{ shortenedUrl: string; user?: User }> {
+  ): Promise<{ originalUrl: string; shortenedUrl: string; user?: User }> {
     let user: User | null = null;
 
     if (userId) {
@@ -51,10 +51,12 @@ export class UrlShortenerService {
     await this.shortenedUrlRepository.save(shortenedUrlEntity);
 
     const baseUrl = process.env.BASE_URL?.trim();
-    const formattedBaseUrl = baseUrl.replace(/\/?$/, '/');
-    const shortenedUrl = `${formattedBaseUrl}r/${shortCode}`;
+    const formattedBaseUrl = baseUrl.replace(/\/?$/, '');
+    const shortenedUrl = `${formattedBaseUrl}/shortened-url/${shortCode}`;
 
-    return user ? { shortenedUrl, user } : { shortenedUrl };
+    return user
+      ? { originalUrl: normalizedUrl, shortenedUrl, user }
+      : { originalUrl: normalizedUrl, shortenedUrl };
   }
 
   async getOriginalUrl(shortCode: string): Promise<string | null> {
